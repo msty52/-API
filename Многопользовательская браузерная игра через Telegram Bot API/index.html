@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Telegram Игра</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Используем системные цвета Telegram для дизайна */
+        body {
+            font-family: sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Привет, Игрок!</h1>
+    <p id="user-info">Загрузка данных...</p>
+    <button id="close-btn">Закрыть игру</button>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+
+        // Расширяем окно приложения на весь экран
+        tg.expand();
+
+        // Получаем имя пользователя из Telegram и выводим на экран
+        const userInfo = document.getElementById('user-info');
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            userInfo.innerText = `Твоё имя: ${tg.initDataUnsafe.user.first_name}`;
+        } else {
+            userInfo.innerText = "Запущено вне Telegram! Открой через бота.";
+        }
+
+        // Закрываем приложение по клику на кнопку
+        document.getElementById('close-btn').addEventListener('click', () => {
+            tg.close();
+        });
+    </script>
+</body>
+</html>
