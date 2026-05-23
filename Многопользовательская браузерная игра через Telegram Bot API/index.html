@@ -2,53 +2,62 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Telegram Игра</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мой Кликер</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Используем системные цвета Telegram для дизайна */
         body {
-            font-family: sans-serif;
             background-color: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
+            font-family: sans-serif;
             text-align: center;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #score {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px;
         }
         button {
-            background-color: var(--tg-theme-button-color, #3390ec);
+            background-color: var(--tg-theme-button-color, #2481cc);
             color: var(--tg-theme-button-text-color, #ffffff);
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 8px;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 20px;
             cursor: pointer;
-            margin-top: 20px;
+            transition: transform 0.1s;
+        }
+        button:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
-    <h1>Привет, Игрок!</h1>
-    <p id="user-info">Загрузка данных...</p>
-    <button id="close-btn">Закрыть игру</button>
+
+    <div>Твой счет:</div>
+    <div id="score">0</div>
+    <button id="click-btn">КЛИКАТЬ!</button>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
 
-        // Расширяем окно приложения на весь экран
-        tg.expand();
+        let count = 0;
+        const scoreEl = document.getElementById('score');
+        const btn = document.getElementById('click-btn');
 
-        // Получаем имя пользователя из Telegram и выводим на экран
-        const userInfo = document.getElementById('user-info');
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            userInfo.innerText = `Твоё имя: ${tg.initDataUnsafe.user.first_name}`;
-        } else {
-            userInfo.innerText = "Запущено вне Telegram! Открой через бота.";
-        }
-
-        // Закрываем приложение по клику на кнопку
-        document.getElementById('close-btn').addEventListener('click', () => {
-            tg.close();
+        btn.addEventListener('click', () => {
+            count++;
+            scoreEl.innerText = count;
+            
+            // Легкая вибрация при клике (если устройство поддерживает)
+            tg.HapticFeedback.impactOccurred('light');
         });
     </script>
 </body>
