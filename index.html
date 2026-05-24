@@ -1,31 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Многопользовательская игра</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        #score { font-size: 3em; margin: 20px; }
+        button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; }
+    </style>
 </head>
 <body>
-    <div id="score">0</div>
+
+    <div id="score">Загрузка...</div>
     <button id="click-btn">Клик!</button>
+    <div id="debug" style="font-size: 10px; color: gray; margin-top: 20px;"></div>
 
     <script>
+
         window.Telegram.WebApp.ready();
+        
         const scoreEl = document.getElementById('score');
         const btn = document.getElementById('click-btn');
+        const debugEl = document.getElementById('debug');
 
-        const API_URL = 'https://api-eight-gamma-38.vercel.app?cache=' + Math.random();
+        const API_URL = 'https://api-eight-gamma-38.vercel.app/api/score';
 
-        async function update(method = 'GET') {
+        async function updateScore(method = 'GET') {
             try {
-                const res = await fetch(API_URL + '/api/score', { method });
+                const timestamp = new Date().getTime();
+                const res = await fetch(`${API_URL}?t=${timestamp}`, { 
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
+                
                 const data = await res.json();
-                scoreEl.innerText = data.count;
+                scoreEl.innerText = data.count !== undefined ? data.count : 0;
             } catch (e) {
-                scoreEl.innerText = "Err: " + e.message;
+                scoreEl.innerText = "Ошибка!";
+                debugEl.innerText = "Debug: " + e.message;
             }
         }
 
-        btn.onclick = () => update('POST');
-        update('GET');
+        btn.addEventListener('click', () => updateScore('POST'));
+        updateScore('GET');
     </script>
 </body>
 </html>
