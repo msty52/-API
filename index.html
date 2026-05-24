@@ -2,50 +2,59 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Многопользовательская игра</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Многопользовательсая кликер игра</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        #score { font-size: 3em; margin: 20px; }
-        button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; }
+        :root { --tg-bg-color: #ffffff; --tg-text-color: #000000; }
+        body { 
+            background-color: var(--tg-theme-bg-color, #f0f2f5); 
+            color: var(--tg-theme-text-color, #000);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0;
+        }
+        #score-container { text-align: center; margin-bottom: 30px; }
+        #score { font-size: 4rem; font-weight: bold; }
+        #click-btn { 
+            background: #2481cc; color: white; border: none; 
+            padding: 20px 50px; font-size: 1.5rem; border-radius: 20px;
+            cursor: pointer; transition: transform 0.1s;
+        }
+        #click-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div id="score">Загрузка...</div>
-    <button id="click-btn">Клик!</button>
-    <div id="debug" style="font-size: 10px; color: gray; margin-top: 20px;"></div>
+    <div id="score-container">
+        <div>Всего кликов:</div>
+        <div id="score">0</div>
+    </div>
+    <button id="click-btn">Кликнуть!</button>
 
     <script>
 
         window.Telegram.WebApp.ready();
-        
+        window.Telegram.WebApp.expand(); 
+
         const scoreEl = document.getElementById('score');
         const btn = document.getElementById('click-btn');
-        const debugEl = document.getElementById('debug');
-
         const API_URL = 'https://api-eight-gamma-38.vercel.app/api/score';
 
         async function updateScore(method = 'GET') {
             try {
-                const timestamp = new Date().getTime();
-                const res = await fetch(`${API_URL}?t=${timestamp}`, { 
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' }
+
+                const res = await fetch(`${API_URL}?t=${Date.now()}`, { 
+                    method: method 
                 });
-                
-                if (!res.ok) throw new Error('Ошибка сервера: ' + res.status);
-                
                 const data = await res.json();
-                scoreEl.innerText = data.count !== undefined ? data.count : 0;
+                scoreEl.innerText = data.count || 0;
             } catch (e) {
-                scoreEl.innerText = "Ошибка!";
-                debugEl.innerText = "Debug: " + e.message;
+                console.error("Ошибка:", e);
             }
         }
 
-        btn.addEventListener('click', () => updateScore('POST'));
+        btn.onclick = () => updateScore('POST');
         updateScore('GET');
     </script>
 </body>
