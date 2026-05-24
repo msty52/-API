@@ -3,15 +3,25 @@ const { MongoClient } = require('mongodb');
 const client = new MongoClient(process.env.MONGODB_URI);
 
 export default async function handler(req, res) {
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
     try {
         await client.connect();
-        const db = client.db('game_db');
-        const collection = db.collection('global_score');
+        const db = client.db('game_db'); 
+        const collection = db.collection('global_score'); 
 
         if (req.method === 'GET') {
+
             const doc = await collection.findOne({ _id: 'clicks' });
             res.status(200).json({ count: doc ? doc.count : 0 });
-        } else if (req.method === 'POST') {
+        } 
+        else if (req.method === 'POST') {
+
             const result = await collection.findOneAndUpdate(
                 { _id: 'clicks' },
                 { $inc: { count: 1 } },
