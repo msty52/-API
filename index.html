@@ -12,7 +12,7 @@
         const scoreEl = document.getElementById('score');
         const btn = document.getElementById('click-btn');
 
-        const API_URL = 'https://api-eight-gamma-38.vercel.app'; 
+        const API_URL = 'https://api-eight-gamma-38.vercel.app?cache=' + Math.random();
 
         async function update(method = 'GET') {
             try {
