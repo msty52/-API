@@ -1,59 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Игра</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { text-align: center; font-family: sans-serif; padding-top: 50px; }
-        #score { font-size: 3em; font-weight: bold; margin: 20px; }
-        button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; }
-    </style>
 </head>
 <body>
-
-    <h1>Кликер</h1>
     <div id="score">0</div>
-    
     <button id="click-btn">Клик!</button>
 
     <script>
-        // Инициализируем Telegram Web App
         window.Telegram.WebApp.ready();
-
         const scoreEl = document.getElementById('score');
         const btn = document.getElementById('click-btn');
 
-        // 1. Функция загрузки счета с сервера
-        async function loadScore() {
+        const API_URL = 'https://api-eight-gamma-38.vercel.app'; 
+
+        async function update(method = 'GET') {
             try {
-                const res = await fetch('/api/score');
-                if (!res.ok) throw new Error('Ошибка сервера');
+                const res = await fetch(API_URL + '/api/score', { method });
                 const data = await res.json();
                 scoreEl.innerText = data.count;
-            } catch (e) { 
-                console.error("Ошибка загрузки:", e);
-                scoreEl.innerText = "Error";
+            } catch (e) {
+                scoreEl.innerText = "Err: " + e.message;
             }
         }
 
-        // 2. Функция клика
-        btn.addEventListener('click', async () => {
-            // Вибрация
-            if (window.Telegram.WebApp.HapticFeedback) {
-                window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-            }
-
-            try {
-                const res = await fetch('/api/score', { method: 'POST' });
-                const data = await res.json();
-                scoreEl.innerText = data.count;
-            } catch (e) { console.error("Ошибка клика:", e); }
-        });
-
-        // Запускаем при загрузке страницы
-        loadScore();
+        btn.onclick = () => update('POST');
+        update('GET');
     </script>
 </body>
 </html>
