@@ -7,23 +7,32 @@
     <h1>Общий счет: <span id="total-score">0</span></h1>
     <button id="click-btn">Кликнуть!</button>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        const btn = document.getElementById('click-btn');
-        const scoreEl = document.getElementById('total-score');
+<script>
+    const scoreEl = document.getElementById('score'); // ID твоего элемента с цифрой
+    const btn = document.getElementById('click-btn'); // ID твоей кнопки
 
-        // Твой сервер (после деплоя на Render/Railway)
-        const SERVER_URL = 'https://твой-сервер.onrender.com';
+    async function loadScore() {
+        try {
+            const res = await fetch('/api/score');
+            const data = await res.json();
+            scoreEl.innerText = data.count;
+        } catch (e) { console.log("Ошибка загрузки:", e); }
+    }
 
-        btn.addEventListener('click', async () => {
-            const response = await fetch(`${SERVER_URL}/click`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: tg.initDataUnsafe.user.id })
-            });
-            const data = await response.json();
-            scoreEl.innerText = data.totalScore;
-        });
-    </script>
+    btn.addEventListener('click', async () => {
+
+        if (window.Telegram.WebApp.HapticFeedback) {
+            window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+
+        try {
+            const res = await fetch('/api/score', { method: 'POST' });
+            const data = await res.json();
+            scoreEl.innerText = data.count; // Обновляем экран числом из базы
+        } catch (e) { console.log("Ошибка клика:", e); }
+    });
+
+    loadScore(); 
+</script>
 </body>
 </html>
